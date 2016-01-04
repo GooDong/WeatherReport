@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@drawable/datas_item_bkg"
+     >
+
+    <TextView
+        android:id="@+id/txt_oterdatas_name"
+        android:layout_width="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:layout_height="wrap_content"
+        android:text="數據名"
+        android:textSize="12sp"
+         />
+
+    <TextView
+        android:id="@+id/txt_otherdatas_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:text="詳細數據" />
+
+</LinearLayout>

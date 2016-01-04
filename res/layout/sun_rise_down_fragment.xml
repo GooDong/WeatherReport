@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	   android:layout_width="match_parent"
+	   android:layout_height="330dip"
+	   android:orientation="vertical"
+	   android:background="@drawable/weather_air_fragment_bkg"
+	   >
+	   <TextView 
+	       android:id="@+id/txt_sun_name"
+	       android:layout_gravity="center_horizontal"
+	       android:layout_width="wrap_content"
+	       android:layout_height="wrap_content"
+	       android:textColor="@android:color/white"
+	       android:textSize="24sp"
+	       android:padding="20dip"
+	       android:text="1111"
+	       />
+	   <LinearLayout
+		    android:id="@+id/lin_sun_rise_down_fragment"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="vertical"
+		    android:layout_marginBottom="30dip"
+		    >
+	    </LinearLayout>
+</LinearLayout>
+
+
+
+

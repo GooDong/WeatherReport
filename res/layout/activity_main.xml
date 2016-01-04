@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sgd.view.PullToRefreshView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_pull_refreshview"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/main_color"
+    >
+	<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+  	>
+   	 <RelativeLayout
+        android:id="@+id/rel_weather"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TextView
+            android:id="@+id/txt_city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="城市"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+	
+        <ImageView
+            android:id="@+id/img_check_all_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/txt_temperature"
+            android:layout_alignTop="@+id/txt_city_name"
+            android:src="@drawable/check_all_city" />
+        
+        <TextView
+            android:id="@+id/txt_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_city_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="18dp"
+            android:text="温度"
+            android:textColor="@android:color/white"
+            android:textSize="45sp" />
+
+        <ImageView
+            android:id="@+id/img_weather"
+            android:layout_width="80dip"
+            android:layout_height="80dip"
+            android:layout_below="@+id/txt_temperature"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/defult_weather" />
+
+        <TextView
+            android:id="@+id/txt_weather_air"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/img_weather"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:text="天气|空气质量"
+            android:textColor="@android:color/white"
+            android:textSize="25sp" />
+
+        <TextView
+            android:id="@+id/txt_weather_sendtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_weather_air"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:text="发布时间"
+            android:textColor="@android:color/white"
+            android:textSize="12sp" />
+        
+		<!-- 展示所有天数的温度数据 -->
+        <LinearLayout
+            android:id="@+id/lin_weather_change_line"
+            android:layout_width="fill_parent"
+            android:layout_height="180dp"
+            android:layout_below="@id/txt_weather_sendtime"
+            android:layout_marginTop="60dip"
+            android:orientation="horizontal" >
+        </LinearLayout>
+        
+		<!-- 天气数据 -->
+        <GridView
+            android:id="@+id/gridview_weather_days"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lin_weather_change_line"
+            android:layout_marginTop="1dip"
+            android:gravity="center_horizontal"
+            android:numColumns="5" />
+
+
+        <!-- 展示其他的天氣数据 -->
+        <GridView
+            android:id="@+id/gridview_weather_otherdatas"
+            android:layout_width="match_parent"
+            android:layout_height="250dip"
+            android:layout_below="@id/gridview_weather_days"
+            android:layout_marginTop="30dip"
+            android:gravity="center_horizontal"
+            android:numColumns="3" />
+        
+        <!-- 空气质量指示表 -->
+        <LinearLayout
+            android:id="@+id/lin_air_qulity"
+            android:layout_width="match_parent"
+            android:layout_below="@id/gridview_weather_otherdatas"
+            android:layout_marginTop="30dip"
+            android:layout_height="300dip"
+            android:orientation="vertical"
+            >
+        </LinearLayout>
+        
+        <!-- 日出日落示意 -->
+        <LinearLayout
+            android:id="@+id/lin_sun_start_end"
+            android:layout_width="match_parent"
+            android:layout_below="@id/lin_air_qulity"
+            android:layout_marginTop="40dip"
+            android:layout_height="350dip"
+            android:orientation="vertical"
+            ></LinearLayout>
+
+
+    </RelativeLayout>
+
+</ScrollView>
+</com.sgd.view.PullToRefreshView>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="5dip"
+    >
+
+    <TextView
+        android:id="@+id/txt_city_name_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="城市名称"
+        android:layout_marginStart="10dip"
+        android:textSize="24sp"
+        />
+
+    <TextView
+        android:id="@+id/txt_city_sign_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/txt_city_name_item"
+        android:layout_alignBottom="@+id/txt_city_name_item"
+        android:layout_alignParentEnd="true"
+        android:text="当前位置"
+        android:layout_marginEnd="10dip"
+        android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/img_sign_item"
+        android:layout_width="18dip"
+        android:layout_height="18dip"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="70dp"
+        android:layout_marginStart="26dp"
+        android:layout_toEndOf="@+id/txt_city_name_item"
+        android:layout_toStartOf="@+id/txt_city_sign_item"
+        android:src="@drawable/icon_city_sign" />
+
+</RelativeLayout>

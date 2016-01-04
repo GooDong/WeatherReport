@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:background="@drawable/city_item_bkg"
+    >
+    <TextView
+        android:id="@+id/txt_city_name_now"
+        android:padding="8dip"
+        android:gravity="center" 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        />
+	<ImageView 
+	    android:id="@+id/img_city_sign_now"
+	    android:layout_width="16dip"
+	    android:layout_height="16dip"
+	    android:gravity="start"
+	    android:src="@drawable/icon_city_sign"
+	    android:visibility="gone"
+	    />
+</LinearLayout>
