@@ -80,7 +80,7 @@
         <LinearLayout
             android:id="@+id/lin_weather_change_line"
             android:layout_width="fill_parent"
-            android:layout_height="180dp"
+            android:layout_height="180dip"
             android:layout_below="@id/txt_weather_sendtime"
             android:layout_marginTop="60dip"
             android:orientation="horizontal" >

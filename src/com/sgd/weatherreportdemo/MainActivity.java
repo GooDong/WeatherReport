@@ -34,13 +34,13 @@ import com.sgd.adapter.OtherDatasAdapter;
 import com.sgd.adapter.WeatherDayViewAdapter;
 import com.sgd.fragment.AirQulityFragment;
 import com.sgd.fragment.SunDownFragment;
+import com.sgd.fragment.TemperatureChangeLineFragment;
 import com.sgd.utils.DownImageLruCacheUtils;
 import com.sgd.utils.MyUtils;
 import com.sgd.utils.ReadAndWriteJasonFileUtil;
 import com.sgd.utils.WeatherDataUtils;
 import com.sgd.utils.DownImageLruCacheUtils.OnImgLoadDownLisenter;
 import com.sgd.view.PullToRefreshView;
-import com.sgd.view.WeatherDataLineView;
 import com.sgd.view.PullToRefreshView.OnFooterRefreshListener;
 import com.sgd.view.PullToRefreshView.OnHeaderRefreshListener;
 import com.sgd.weatherreportdemo.R;
@@ -101,7 +101,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	//碎片
 	AirQulityFragment airQulityFragment;
 	SunDownFragment sunDownFragment;
-	
+	TemperatureChangeLineFragment temperatureLineFragment;
 	//下拉刷新组件
 	PullToRefreshView mPullToRefreshView;
 	boolean isFreshing = false;
@@ -199,15 +199,14 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 						MainActivity.this, cityNameForNow);
 				break;
 			case REFREASH_WEATHER_DATA:
-				
 				//设置当前天气数据
 				setWeatherNowData();
-				//绘制温度变化图
-				drawWeatherDataLine();
 				//设置近期温度数据
 				setWeatherDayData();
 				//设置其他数据
 				setOtherDatas();
+				//绘制温度变化图
+				setWeatherDataLine();
 				//绘制空气质量图
 				setAirQulityView();
 				//绘制日日落图
@@ -243,20 +242,28 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	}
 	/**  初始化空气质量展示图、日出日落图 */
 	private void initshowViews() {
+		//初始化空气质量展示图
 		airQulityFragment = new AirQulityFragment();
 		airQulityFragment.setData(1);
 		airQulityFragment.setPm2_5("0");
 		airQulityFragment.setSendTime("00:00");
-		
+		//初始化日出日落示意图
 		sunDownFragment = new SunDownFragment();
 		sunDownFragment.setTimes(times);
-		
+		//初始化温度曲线变化图
+		int linHeight = linWeatherChangeLine.getHeight();
+		float[][] index = {{50,50,50,50,50,50,50},{50,50,50,50,50,50,50}};
+		temperatureLineFragment = new TemperatureChangeLineFragment();
+		temperatureLineFragment.setLinHeight(linHeight);
+		temperatureLineFragment.setIndex(index);
+		//替换碎片
 		FragmentTransaction ft = getFragmentManager().beginTransaction();
 		ft.replace(R.id.lin_air_qulity, airQulityFragment);
 		ft.replace(R.id.lin_sun_start_end, sunDownFragment);
+		ft.replace(R.id.lin_weather_change_line, temperatureLineFragment);
 		ft.commit();
 	}
-	/** 绘制空气质量图示 */
+	/** 绘制/刷新空气质量图 */
 	private void setAirQulityView() {
 		//刷新数据
 		airQulityFragment.setData(Integer.parseInt(otherTemDatas.aqi));
@@ -265,29 +272,23 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 		//重绘展示图
 		airQulityFragment.refreshView();
 	}
-	/** 绘制日出日落时间展示  */
+	/** 绘制/刷新日出日落时间图  */
 	private void setSunDownDow() {
-		//刷新数据
 		sunDownFragment.setTimes(times);
-		//重绘展示图
 		sunDownFragment.refreshView();
 	}
-	
+	/** 绘制/刷新温度曲线图*/
+	private void setWeatherDataLine() {
+		int linHeight = linWeatherChangeLine.getHeight();
+		temperatureLineFragment.setLinHeight(linHeight);
+		temperatureLineFragment.setIndex(daysTemperature);
+		temperatureLineFragment.refreshView();
+	}
 	/**  設置各天的溫度數據 */
 	private void setWeatherDayData() {
 		adapter = new WeatherDayViewAdapter(weatherDataList, MainActivity.this,
 				handler, downImgUtil);
 		weatherDaysView.setAdapter(adapter);
-	}
-
-	/** 绘制温度曲线*/
-	private void drawWeatherDataLine() {
-		linWeatherChangeLine.removeAllViews();
-		int linHeight = linWeatherChangeLine.getHeight();
-		WeatherDataLineView lineView = WeatherDataLineView
-				.createNewWeatherDataLineView(MainActivity.this,
-						daysTemperature, linHeight);
-		linWeatherChangeLine.addView(lineView);
 	}
 
 	/** 设置当前温度数据 */ 

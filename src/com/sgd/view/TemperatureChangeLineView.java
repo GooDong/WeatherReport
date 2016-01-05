@@ -5,90 +5,57 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sgd.utils.MyUtils;
-import com.sgd.weatherreportdemo.IConstans;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.view.View;
+import android.graphics.RectF;
+import android.util.AttributeSet;
+import com.sgd.base.BaseSurfaceView;
+import com.sgd.utils.MyUtils;
+import com.sgd.weatherreportdemo.IConstans;
 
-public class WeatherDataLineView extends View implements IConstans{
+public class TemperatureChangeLineView extends BaseSurfaceView implements IConstans{
 	//每天最高温度的保存坐标点
 	List<Float> points_x_h;
 	List<Float> points_y_h;
+	
 	//每天最低温度的保存坐标点
 	List<Float> points_x_l;
 	List<Float> points_y_l;
+	
 	//温度数据
 	float[][] index ;
+	
 	//父容器的高度
 	int linHeight;
+	
 	//最值温度的值和坐标
 	float max;
 	float min;
 	int indexOfMax;
 	int indexOfMin;
-	//画笔
-	Paint paint;
+	
 	//温度曲线的路径
-	Path[] path = new Path[2];
+	Path[] path;
+	
+	//保存最高/低温度的值及其坐标
 	HashMap<String,Object> mixNums = new HashMap<String,Object>();
+	
 	float screenWidthPeace,screenWidth;
-	
-	public static WeatherDataLineView createNewWeatherDataLineView(
-			Context context,float[][] indexIn,int linHeight){
-		return new WeatherDataLineView(context,indexIn,linHeight);
+	public TemperatureChangeLineView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 	}
-	
-	public WeatherDataLineView(Context context,float[][] indexIn,int linHeight) {
-		super(context);
-		this.index = MyUtils.getInstance().adapterData(linHeight, indexIn);
-		this.linHeight = linHeight;
-		mixNums = MyUtils.getInstance().getMixNums(linHeight, indexIn);
-		//得到最值
-		max = (float) mixNums.get("max");
-		min = (float) mixNums.get("min");
-		indexOfMax = (int) mixNums.get("indexOfMax");
-		indexOfMin = (int) mixNums.get("indexOfMin");
-		//得到屏幕宽度
-		screenWidth = context.getResources().getDisplayMetrics().widthPixels;
-		//分割屏幕的宽度
-		screenWidthPeace = screenWidth/10;
-		initPaint();
-		//初始化路径
-		initPathH();
-		initPathL();
+
+	@Override
+	public Thread createDrawThread() {
+		return new drawThread();
 	}
-	/**
-	 * 初始化绘制路径
-	 * */
-	private void initPathH(){
-		//每天的最高温度
-		points_x_h = new ArrayList<Float>();
-		points_y_h = new ArrayList<Float>();
-		for (int i = 0; i < NUM_WEATHER_DAYS; i++) {
-			points_x_h.add(screenWidthPeace * (i*2 - 1));
-			points_y_h.add(index[0][i]);
-		}
-	}
-	private void initPathL(){
-		//每天的最低温度
-		points_x_l = new ArrayList<Float>();
-		points_y_l = new ArrayList<Float>();
-		for (int i = 0; i < NUM_WEATHER_DAYS; i++) {
-			points_x_l.add(screenWidthPeace * (i*2 -1));
-			points_y_l.add(index[1][i]);
-		}
-	}
-	/**
-	 * 初始化画笔参数
-	 * */
-	private void initPaint() {
+
+	@Override
+	public void initPaint() {
 		paint = new Paint();
 		//线型画笔
 		paint.setStyle(Paint.Style.STROKE);
@@ -99,17 +66,110 @@ public class WeatherDataLineView extends View implements IConstans{
 		//抗锯齿
 		paint.setAntiAlias(true);
 	}
+	
+	public void setDatasAndHeight(float[][] indexIn,int linHeight){
+		this.index = MyUtils.getInstance().adapterData(linHeight, indexIn);
+		this.linHeight = linHeight;
+		mixNums = MyUtils.getInstance().getMixNums(linHeight, indexIn);
+		//得到最值
+		max = (float) mixNums.get("max");
+		min = (float) mixNums.get("min");
+		indexOfMax = (int) mixNums.get("indexOfMax");
+		indexOfMin = (int) mixNums.get("indexOfMin");
+		//得到屏幕宽度
+		screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
+		//分割屏幕的宽度
+		screenWidthPeace = screenWidth/10;
+		initPaint();
+	}
+	/** 初始化绘制路径  */
+	private void initPath(float[][] index){
+		initPathH(index);
+		initPathL(index);
+	}
+	private void initPathH(float[][] index){
+		//每天的最高温度
+		points_x_h = new ArrayList<Float>();
+		points_y_h = new ArrayList<Float>();
+		for (int i = 0; i < NUM_WEATHER_DAYS; i++) {
+			points_x_h.add(screenWidthPeace * (i*2 - 1));
+			points_y_h.add(index[0][i]);
+		}
+	}
+	private void initPathL(float[][] index){
+		//每天的最低温度
+		points_x_l = new ArrayList<Float>();
+		points_y_l = new ArrayList<Float>();
+		for (int i = 0; i < NUM_WEATHER_DAYS; i++) {
+			points_x_l.add(screenWidthPeace * (i*2 -1));
+			points_y_l.add(index[1][i]);
+		}
+	}
+	public class drawThread extends Thread{
+		float[][] tempDatas = new float[2][NUM_WEATHER_DAYS];
+		boolean drawing = true;
+		
+		@Override
+		public void run() {
+			for (int i = 0; i < DAYS.length; i++) {
+				//临时数组中的初始数据全部为最小值
+				//绘制曲线时，每次加一，直到等于目标值
+				tempDatas[0][i] = min;
+				tempDatas[1][i] = min;
+			}
+			Canvas canvas = null;
+			try {
+				while(drawing){
+					canvas = holder.lockCanvas();
+					initPath(tempDatas);
+					drawLine(canvas);
+					holder.unlockCanvasAndPost(canvas);
+					Thread.sleep(50);
+					int countH = 0;
+					int countL = 0;
+					for (int i = 0; i < DAYS.length; i++) {
+						//如果当前值不大于目标值则加一
+						//若否则恒等于目标值
+						if(tempDatas[0][i] < index[0][i]){
+							tempDatas[0][i] = tempDatas[0][i] +8;
+						}else{
+							++countH;
+							tempDatas[0][i] = index[0][i];
+						}
+						
+						if(tempDatas[1][i] < index[1][i]){
+							tempDatas[1][i] = tempDatas[1][i] +8;
+						}else{
+							++countL;
+							tempDatas[1][i] =index[1][i];
+						}
+					}
+					
+					if((countH == 7)&&(countL == 7)){
+						//当所有的临时数据都等于目标值时，终止循环
+						canvas = holder.lockCanvas();
+						initPath(tempDatas);
+						drawLine(canvas);
+						drawSomethingElse(canvas);
+						holder.unlockCanvasAndPost(canvas);
+						drawing = false;
+						continue;
+					}
 
-	@SuppressLint("DrawAllocation")
-	@Override
-	protected void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	protected void drawLine(Canvas canvas) {
 		//根据当前的温度点计算所有出路径中的点
 		List<Cubic> calculate_x_h = calculate(points_x_h);
 		List<Cubic> calculate_y_h = calculate(points_y_h);
 		List<Cubic> calculate_x_l = calculate(points_x_l);
 		List<Cubic> calculate_y_l = calculate(points_y_l);
 		//初始化路径
+		path = new Path[2];
 		path[0] = new Path();
 		path[1] = new Path();
 		path[0].moveTo(calculate_x_h.get(0).eval(0), calculate_y_h.get(0).eval(0));
@@ -123,11 +183,27 @@ public class WeatherDataLineView extends View implements IConstans{
 						.eval(u));
 			}
 		}
+		//先绘制背景将之前的痕迹覆盖
+		RectF r = new RectF(0, 0,screenWidth,linHeight);
+		Paint paintRec = new Paint(paint);
+		paintRec.setStyle(Paint.Style.FILL);
+		paintRec.setColor(Color.rgb(0x33, 0x55, 0x88));
+		canvas.drawRect(r , paintRec);
+		
 		//绘制路径
 		canvas.drawPath(path[0], paint);
 		canvas.drawPath(path[1], paint);
-		canvas.save();
-		
+		clear();
+	}
+	private void clear() {
+		path = null;
+		points_x_l.clear();
+		points_y_l.clear();
+		points_x_h.clear();
+		points_y_h.clear();
+	}
+
+	private void drawSomethingElse(Canvas canvas) {
 		//当天的数据上绘制实心圆点
 		paint.setStyle(Paint.Style.FILL);
 		canvas.drawCircle(screenWidthPeace, index[0][1], 5, paint);
@@ -148,34 +224,19 @@ public class WeatherDataLineView extends View implements IConstans{
 		
 		//在相应位置处绘制最高温度和最低温度,局部位置微调
 		canvas.drawText(max+"℃",(indexOfMax*2 - 1)*screenWidthPeace , index[0][indexOfMax]-15, paint);
-		canvas.save();
 		canvas.drawText(min+"℃",(indexOfMin*2 - 1)*screenWidthPeace , index[1][indexOfMin]+35, paint);
-		canvas.save();
-		
 	}
 	/**
 	 * 计算曲线.
 	 * @param x
 	 * @return
 	 */
-	private List<Cubic> calculate(List<Float> x) {
+	public List<Cubic> calculate(List<Float> x) {
 		int n = x.size() - 1;
 		float[] gamma = new float[n + 1];
 		float[] delta = new float[n + 1];
 		float[] D = new float[n + 1];
 		int i;
-		/*
-		 * We solve the equation [2 1 ] [D[0]] [3(x[1] - x[0]) ] |1 4 1 | |D[1]|
-		 * |3(x[2] - x[0]) | | 1 4 1 | | . | = | . | | ..... | | . | | . | | 1 4
-		 * 1| | . | |3(x[n] - x[n-2])| [ 1 2] [D[n]] [3(x[n] - x[n-1])]
-		 * 
-		 * 通过使用行操作来变换高阶三角矩阵，
-		 * by using row operations to convert the matrix to upper triangular and
-		 * 然后回代。
-		 * then back sustitution（通过使用行变换矩阵转换为上三角sustitution然后回来）.
-		 *  The D[i] are the derivatives/派生物 at the knots/节点.
-		 */
-
 		gamma[0] = 1.0f / 2.0f;
 		for (i = 1; i < n; i++) {
 			gamma[i] = 1 / (4 - gamma[i - 1]);
@@ -205,21 +266,24 @@ public class WeatherDataLineView extends View implements IConstans{
 		return cubics;
 	}
 	class Cubic {
-		 float a,b,c,d;         
-
+		  float a,b,c,d;         
 		  public Cubic(float a, float b, float c, float d){
 		    this.a = a;
 		    this.b = b;
 		    this.c = c;
 		    this.d = d;
 		  }
-		  
 		  /** evaluate cubic */
 		  public float eval(float u) {
 		    return (((d*u) + c)*u + b)*u + a;
 		  }
 	}
 }
+
+
+
+
+
 
 
 
