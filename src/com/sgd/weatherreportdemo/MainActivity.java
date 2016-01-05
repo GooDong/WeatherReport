@@ -263,7 +263,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 		airQulityFragment.setPm2_5(otherTemDatas.airAqiDetail);
 		airQulityFragment.setSendTime(weatherNow.temperature_time);
 		//重绘展示图
-		airQulityFragment.refreshUI();
+		airQulityFragment.refreshView();
 	}
 	/** 绘制日出日落时间展示  */
 	private void setSunDownDow() {

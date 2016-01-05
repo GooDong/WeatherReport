@@ -1,10 +1,5 @@
 package com.sgd.view;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import com.sgd.utils.MyUtils;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,14 +7,14 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.util.AttributeSet;
 
-public class SunDownView extends SurfaceView implements SurfaceHolder.Callback{
+import com.sgd.base.BaseSurfaceView;
+import com.sgd.utils.MyUtils;
+
+public class SunDownView extends BaseSurfaceView{
 	//定义一个字体大小的倡廉
 	final static int TEXT_SIZE = 30;
-	//得到上下文，方便获取屏幕的宽度
-	Context mContext;
 	//获得屏幕的宽度
 	float screenWidth,screenHeight,radius;
 	//定义边距
@@ -28,18 +23,18 @@ public class SunDownView extends SurfaceView implements SurfaceHolder.Callback{
 	float progress;
 	//定义三个时间
 	String sunStartTime,sunEndTime,timeNow;
-	Paint paint ;
-	SurfaceHolder holder;
-	ExecutorService exec;
-	Canvas canvas;
-	public SunDownView(Context context) {
-		super(context);
-		mContext = context;
-		holder = getHolder();
-		holder.addCallback(this);
-		initPaint();
+	
+	public SunDownView(Context context, AttributeSet attrs) {
+		super(context, attrs);
 	}
-	private void initPaint() {
+
+	@Override
+	public Thread createDrawThread() {
+		return new drawThread();
+	}
+
+	@Override
+	public void initPaint() {
 		paint = new Paint();
 		paint.setStyle(Paint.Style.FILL_AND_STROKE);
 		paint.setStrokeWidth(3);
@@ -47,27 +42,8 @@ public class SunDownView extends SurfaceView implements SurfaceHolder.Callback{
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(TEXT_SIZE);
 	}
-	/** 刷新时间(参数) */
-	public void resetTimes(int[] times){
-		initDatas(times);
-	}
-	/** 开始绘制 */
-	public void startToDraw(){
-		if(exec == null || exec.isShutdown()){
-			//如果线程池是空的则新建一个线程池
-			exec = Executors.newSingleThreadExecutor();
-		}
-		exec.execute(new drawThread());
-	}
-	/** 终止绘制 */
-	public void endDrawing(){
-		if(exec != null && !exec.isShutdown()){
-			//shutdown将禁止Executor添加新的任务
-			//shutdownNow向所有线程池中的线程发送一个interrupted（）
-			exec.shutdownNow();
-		}
-	}
-	private void initDatas(int[] times) {
+	
+	public void initDatas(int[] times) {
 		screenWidth = mContext.getResources().getDisplayMetrics().widthPixels;
 		screenHeight = mContext.getResources().getDisplayMetrics().heightPixels;
 		radius = (screenWidth - 2*toLeft)/2;
@@ -81,19 +57,7 @@ public class SunDownView extends SurfaceView implements SurfaceHolder.Callback{
 			progress = 0;
 		}
 	}
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		
-	}
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height) {
-		
-	}
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		
-	}
+	
 	public void drawData(Canvas canvas,int progressNow){
 		
 		//保存为单一层（如果不保存，则源图层将设定为上一白色图层）
@@ -184,4 +148,5 @@ public class SunDownView extends SurfaceView implements SurfaceHolder.Callback{
 		paint.setColor(Color.RED);
 		canvas.drawCircle(screenWidth/2,radius+toLeft , 15 , paint);
 	}
+	
 }

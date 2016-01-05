@@ -1,50 +1,64 @@
 package com.sgd.view;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
-import android.graphics.Paint.Align;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.Paint.Align;
 import android.util.AttributeSet;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 
-public class AirDataShowView extends SurfaceView implements SurfaceHolder.Callback{
+import com.sgd.base.BaseSurfaceView;
+
+public class AirDataShowView extends BaseSurfaceView{
 	//空气质量参数
 	int data;
+	
 	//PM2.5的指数
 	String PM2_5;
-	//画笔
-	Paint paint;
-	//SurfaceView Holder
-	SurfaceHolder holder;
+	
 	//定义视图相对父类容器的位置数据
 	float TO_LEFT ;
 	float TO_RIGHT ;
 	float TOP;
 	float BOTTOM;
+	
 	//定义视图中指针的长度
 	float lineLength;
+	
+	//视图的中心位置坐标
 	float center_x;
 	float center_y;
-	Context mContext;
-	ExecutorService exec;
+	
 	public AirDataShowView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		mContext = context;
-		holder = getHolder();
-		holder.addCallback(this);
-		initPaint();
 	}
-	/**
-	 * 初始化视图相对于父类容器的相对位置
-	 * */
+
+	@Override
+	public Thread createDrawThread() {
+		return new drawThread();
+	}
+
+	/** 初始化画笔参数  */
+	@Override
+	public void initPaint() {
+		paint = new Paint();
+		paint.setStyle(Paint.Style.STROKE);
+		paint.setStrokeWidth(20);
+		paint.setAntiAlias(true);
+		paint.setColor(Color.WHITE);
+		paint.setTextSize(50);
+		paint.setTextAlign(Align.CENTER);
+	}
+
+	@Override
+	public void initDatas() {
+		initDistance(data,PM2_5);
+	}
+	
+	/** 初始化视图相对于父类容器的相对位置 */
 	public void initDistance(int dataIn,String pm_2_5_in) {
 	    int	leftDistance = mContext.getResources().getDisplayMetrics().widthPixels/2;
 		TO_LEFT = leftDistance - 175;
@@ -57,51 +71,7 @@ public class AirDataShowView extends SurfaceView implements SurfaceHolder.Callba
 		this.data = dataIn;
 		this.PM2_5 = pm_2_5_in;
 	}
-	/** 开始绘制 */
-	public void startToDraw(){
-		if(exec == null || exec.isShutdown()){
-			//如果线程池是空的则新建一个线程池
-			exec = Executors.newSingleThreadExecutor();
-		}
-		exec.execute(new drawThread());
-	}
-	/** 终止线程 */
-	public void endDrawing(){
-		if(exec != null && !exec.isShutdown()){
-			exec.shutdownNow();
-		}
-	}
-	/** 刷新参数 */
-	public void resetDistance(int dataIn,String pm_2_5_in){
-		initDistance(dataIn,pm_2_5_in);
-	}
-	/**
-	 * 初始化画笔参数
-	 * */
-	private void initPaint() {
-		paint = new Paint();
-		paint.setStyle(Paint.Style.STROKE);
-		paint.setStrokeWidth(20);
-		paint.setAntiAlias(true);
-		paint.setColor(Color.WHITE);
-		paint.setTextSize(50);
-		paint.setTextAlign(Align.CENTER);
-	}
-
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		
-	}
-
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height) {
-		
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-	}
+	
 	public void drawData(Canvas canvas,int dataNow){
 		//绘制进度的底层
 		RectF oval = new RectF(TO_LEFT,TOP,TO_RIGHT,BOTTOM);
@@ -158,33 +128,6 @@ public class AirDataShowView extends SurfaceView implements SurfaceHolder.Callba
 				}
 		}
 	}
+
+	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
