@@ -153,6 +153,8 @@ public class TemperatureChangeLineView extends BaseSurfaceView implements IConst
 						drawSomethingElse(canvas);
 						holder.unlockCanvasAndPost(canvas);
 						drawing = false;
+						//延迟下一个绘制线程的开始时间
+						Thread.sleep(2000);
 						continue;
 					}
 
