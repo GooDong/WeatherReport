@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.sgd.weatherreportdemo"
+    android:versionCode="2"
+    android:versionName="1.1" >
+
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="22" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <application
+        android:name="com.sgd.app.MyApp"
+        android:allowBackup="true"
+        android:icon="@drawable/weather_icon"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <!-- 主页面  显示天气信息 -->
+        <activity
+            android:name="com.sgd.weatherreportdemo.MainActivity"
+            android:label="@string/app_name" 
+            android:launchMode="singleTask"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+				
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- 显示当前存储的城市信息列表 -->
+        <activity
+            android:name="com.sgd.weatherreportdemo.LocalCityActivity"
+            android:label="@string/title_activity_local_city" >
+        </activity>
+        <provider
+            android:name="com.sgd.baseDao.cityInfoProvider"
+            android:authorities="com.sgd.baseDao.cityinfoprovider"
+            android:exported="false" >
+        </provider>
+		<!-- 添加城市信息 -->
+        <activity
+            android:name="com.sgd.weatherreportdemo.AddCityActivity"
+            android:label="@string/title_activity_add_city" >
+        </activity>
+    </application>
+
+</manifest>
