@@ -124,21 +124,20 @@ public class TemperatureChangeLineView extends BaseSurfaceView implements IConst
 					initPath(tempDatas);
 					drawLine(canvas);
 					holder.unlockCanvasAndPost(canvas);
-					Thread.sleep(50);
 					int countH = 0;
 					int countL = 0;
 					for (int i = 0; i < DAYS.length; i++) {
 						//如果当前值不大于目标值则加一
 						//若否则恒等于目标值
 						if(tempDatas[0][i] < index[0][i]){
-							tempDatas[0][i] = tempDatas[0][i] +8;
+							tempDatas[0][i] = tempDatas[0][i] +4;
 						}else{
 							++countH;
 							tempDatas[0][i] = index[0][i];
 						}
 						
 						if(tempDatas[1][i] < index[1][i]){
-							tempDatas[1][i] = tempDatas[1][i] +8;
+							tempDatas[1][i] = tempDatas[1][i] +4;
 						}else{
 							++countL;
 							tempDatas[1][i] =index[1][i];

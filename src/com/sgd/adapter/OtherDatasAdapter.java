@@ -8,6 +8,8 @@ import com.sgd.weatherreportdemo.R;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
@@ -49,8 +51,14 @@ public class OtherDatasAdapter extends BaseAdapter implements IConstans{
 		public HandlerView(View layout) {
 			dataName = (TextView) layout.findViewById(R.id.txt_oterdatas_name);
 			dataDetail = (TextView) layout.findViewById(R.id.txt_otherdatas_data);
+			Animation animation = AnimationUtils.loadAnimation(context, R.anim.datas_show_anim);
+			dataDetail.setAnimation(animation );
 		}
 	}
+	public void setOtherDatas(HashMap<String, String> otherDatas) {
+		this.otherDatas = otherDatas;
+	}
+	
 }
 
 

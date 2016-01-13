@@ -19,11 +19,15 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,14 +40,14 @@ import com.sgd.fragment.AirQulityFragment;
 import com.sgd.fragment.SunDownFragment;
 import com.sgd.fragment.TemperatureChangeLineFragment;
 import com.sgd.utils.DownImageLruCacheUtils;
+import com.sgd.utils.DownImageLruCacheUtils.OnImgLoadDownLisenter;
 import com.sgd.utils.MyUtils;
 import com.sgd.utils.ReadAndWriteJasonFileUtil;
+import com.sgd.utils.UiViewRefreshStates;
 import com.sgd.utils.WeatherDataUtils;
-import com.sgd.utils.DownImageLruCacheUtils.OnImgLoadDownLisenter;
 import com.sgd.view.PullToRefreshView;
 import com.sgd.view.PullToRefreshView.OnFooterRefreshListener;
 import com.sgd.view.PullToRefreshView.OnHeaderRefreshListener;
-import com.sgd.weatherreportdemo.R;
 
 /**
  * 主頁面主要用來初始化/更新數據
@@ -79,7 +83,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	ImageView weatherImg;
 	GridView weatherDaysView,otherDatasView;
 	ImageView checkAllInfo;
-	
+	ScrollView mainScrollView;
 	// 存儲了查詢的條件
 	HashMap<String, String> params;
 
@@ -95,13 +99,15 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	
 	// 工具類
 	DownImageLruCacheUtils downImgUtil;
-	WeatherDayViewAdapter adapter;
 	OpenApiAsyncTask weatherCheck;
+	WeatherDayViewAdapter adapter;
+	OtherDatasAdapter datasAdapter;
 	
 	//碎片
 	AirQulityFragment airQulityFragment;
 	SunDownFragment sunDownFragment;
 	TemperatureChangeLineFragment temperatureLineFragment;
+	UiViewRefreshStates uiViewRefreshStates =UiViewRefreshStates.getInstance();
 	//下拉刷新组件
 	PullToRefreshView mPullToRefreshView;
 	boolean isFreshing = false;
@@ -131,6 +137,8 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 		mPullToRefreshView.setOnFooterRefreshListener(this);
 		mPullToRefreshView.setLastUpdateTime(getSharedPreferences("FreshDate", MODE_PRIVATE)
 				.getString("lastFreshDate","2015-12-24 00:00:00"));
+		mainScrollView = (ScrollView) findViewById(R.id.main_scroll_view);
+		mainScrollView.setOnTouchListener( onScrollViewTouchListener);
 		downImgUtil = new DownImageLruCacheUtils(MainActivity.this);
 		exec = Executors.newCachedThreadPool();
 		barrier = new CyclicBarrier(BARRIER_TASK_NUMS, new Runnable() {
@@ -145,6 +153,36 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 		//初始化一些视图的，将它们置零并添加到主页面上
 		initshowViews();
 	}
+	/** 根据滑块的位置刷新相应的视图  */
+	private OnTouchListener onScrollViewTouchListener = new OnTouchListener() {
+		@SuppressLint("ClickableViewAccessibility")
+		@Override
+		public boolean onTouch(View v, MotionEvent event) {
+			switch (event.getAction()) {
+			case MotionEvent.ACTION_MOVE:
+				refreshUIView();
+				break;
+			default:
+				break;
+			}
+			return false;
+		}
+		private void refreshUIView() {
+			uiViewRefreshStates.setCurrentIndex(mainScrollView.getScrollY());
+			if(uiViewRefreshStates.isRefreshDatasLin()){
+				setWeatherDataLine();
+			}
+			if(uiViewRefreshStates.isOtherDatas()){
+				setOtherDatas();
+			}
+			if(uiViewRefreshStates.isRefreshAir()){
+				setAirQulityView();
+			}
+			if(uiViewRefreshStates.isRefreshSun()){
+				setSunDownDow();
+			}
+		}
+	};
 	private void initCurrentCity() {
 		SharedPreferences sp = getSharedPreferences("CurrentCity", MODE_PRIVATE);
 		cityNameForNow = sp.getString("cityNameForNow", "深圳");
@@ -237,7 +275,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	/** 设置其他的天气参数 */
 	private void setOtherDatas() {
 		//填充其他天气数据的ListView
-		OtherDatasAdapter datasAdapter = new OtherDatasAdapter(datas, MainActivity.this);
+		datasAdapter = new OtherDatasAdapter(datas, MainActivity.this);
 		otherDatasView.setAdapter(datasAdapter);
 	}
 	/**  初始化空气质量展示图、日出日落图 */
@@ -447,7 +485,11 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	public void onFooterRefresh(PullToRefreshView view) {
 		mPullToRefreshView.onFooterRefreshComplete();
 	}
-	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+	}
 }
 
 

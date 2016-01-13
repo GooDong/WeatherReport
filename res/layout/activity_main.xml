@@ -8,8 +8,9 @@
     android:background="@color/main_color"
     >
 	<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+	    android:id="@+id/main_scroll_view"
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
   	>
    	 <RelativeLayout
         android:id="@+id/rel_weather"
@@ -105,7 +106,8 @@
             android:layout_below="@id/gridview_weather_days"
             android:layout_marginTop="30dip"
             android:gravity="center_horizontal"
-            android:numColumns="3" />
+            android:numColumns="3" 
+            />
         
         <!-- 空气质量指示表 -->
         <LinearLayout

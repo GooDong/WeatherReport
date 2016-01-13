@@ -20,7 +20,7 @@ public interface IConstans {
 	//定义Api的网址
 	final static String PATH = "http://route.showapi.com/9-2";
 	//定义常用的其他杂项数据名称
-	final static String[] OTHER_DATAS = {"湿度","风向/风力","维度","经度","海拔","雷达号","二氧化硫","10μm颗粒","臭氧平均"};
+	final static String[] OTHER_DATAS = {"湿度","风向/风力","纬度","经度","海拔","雷达号","二氧化硫","10μm颗粒","臭氧平均"};
 	//主要城市
 	final static String[] mainCities = {
 		"定位","北京","上海","广州","深圳","珠海",

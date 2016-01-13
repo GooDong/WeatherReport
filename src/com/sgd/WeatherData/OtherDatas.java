@@ -30,7 +30,7 @@ public class OtherDatas {
 		datas = new HashMap<String,String>();
 		this.datas.put("湿度", sd);
 		this.datas.put("风向/风力",wind_direction+"/"+wind_power);
-		this.datas.put("维度", latitude);
+		this.datas.put("纬度", latitude);
 		this.datas.put("经度", longitude);
 		this.datas.put("海拔", c15);
 		this.datas.put("雷达号", c16);
