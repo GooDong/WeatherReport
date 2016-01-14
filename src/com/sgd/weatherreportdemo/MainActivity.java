@@ -107,7 +107,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 	AirQulityFragment airQulityFragment;
 	SunDownFragment sunDownFragment;
 	TemperatureChangeLineFragment temperatureLineFragment;
-	UiViewRefreshStates uiViewRefreshStates =UiViewRefreshStates.getInstance();
+	UiViewRefreshStates uiViewRefreshStates;
 	//下拉刷新组件
 	PullToRefreshView mPullToRefreshView;
 	boolean isFreshing = false;
@@ -139,6 +139,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 				.getString("lastFreshDate","2015-12-24 00:00:00"));
 		mainScrollView = (ScrollView) findViewById(R.id.main_scroll_view);
 		mainScrollView.setOnTouchListener( onScrollViewTouchListener);
+		uiViewRefreshStates = UiViewRefreshStates.getInstance();		
 		downImgUtil = new DownImageLruCacheUtils(MainActivity.this);
 		exec = Executors.newCachedThreadPool();
 		barrier = new CyclicBarrier(BARRIER_TASK_NUMS, new Runnable() {
@@ -160,6 +161,7 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 		public boolean onTouch(View v, MotionEvent event) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_MOVE:
+				
 				refreshUIView();
 				break;
 			default:
@@ -168,7 +170,14 @@ OnHeaderRefreshListener, OnFooterRefreshListener{
 			return false;
 		}
 		private void refreshUIView() {
+			if(uiViewRefreshStates.getTotalHeight() == 0){
+				uiViewRefreshStates.setTotalHeight(mainScrollView.getChildAt(0).getHeight());
+				Log.i("-------", "mainScrollView.getChildAt(0).getHeight() "
+				+mainScrollView.getChildAt(0).getHeight());
+			}
+			
 			uiViewRefreshStates.setCurrentIndex(mainScrollView.getScrollY());
+			
 			if(uiViewRefreshStates.isRefreshDatasLin()){
 				setWeatherDataLine();
 			}

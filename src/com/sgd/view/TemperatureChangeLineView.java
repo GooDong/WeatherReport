@@ -130,14 +130,14 @@ public class TemperatureChangeLineView extends BaseSurfaceView implements IConst
 						//如果当前值不大于目标值则加一
 						//若否则恒等于目标值
 						if(tempDatas[0][i] < index[0][i]){
-							tempDatas[0][i] = tempDatas[0][i] +4;
+							tempDatas[0][i] = tempDatas[0][i] +6;
 						}else{
 							++countH;
 							tempDatas[0][i] = index[0][i];
 						}
 						
 						if(tempDatas[1][i] < index[1][i]){
-							tempDatas[1][i] = tempDatas[1][i] +4;
+							tempDatas[1][i] = tempDatas[1][i] +6;
 						}else{
 							++countL;
 							tempDatas[1][i] =index[1][i];

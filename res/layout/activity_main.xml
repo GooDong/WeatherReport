@@ -115,7 +115,7 @@
             android:layout_width="match_parent"
             android:layout_below="@id/gridview_weather_otherdatas"
             android:layout_marginTop="30dip"
-            android:layout_height="300dip"
+            android:layout_height="350dip"
             android:orientation="vertical"
             >
         </LinearLayout>

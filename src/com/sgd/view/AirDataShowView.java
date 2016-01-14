@@ -24,14 +24,13 @@ public class AirDataShowView extends BaseSurfaceView{
 	float TO_RIGHT ;
 	float TOP;
 	float BOTTOM;
-	
+	float SCREEN_WIDTH;
 	//定义视图中指针的长度
 	float lineLength;
 	
 	//视图的中心位置坐标
 	float center_x;
 	float center_y;
-	
 	public AirDataShowView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
@@ -60,16 +59,29 @@ public class AirDataShowView extends BaseSurfaceView{
 	
 	/** 初始化视图相对于父类容器的相对位置 */
 	public void initDistance(int dataIn,String pm_2_5_in) {
-	    int	leftDistance = mContext.getResources().getDisplayMetrics().widthPixels/2;
-		TO_LEFT = leftDistance - 175;
-		TO_RIGHT = leftDistance + 175;
-		TOP = 60;
-		BOTTOM = 410;
+	   /* int	leftDistance = mContext.getResources().getDisplayMetrics().widthPixels/2;
+		TO_LEFT = leftDistance - 250;
+		TO_RIGHT = leftDistance + 250;
+		TOP = 80;
+		BOTTOM = 580;
 		lineLength = (BOTTOM - TOP + 100)/2;
 		center_x = (TO_LEFT + TO_RIGHT)/2;
 		center_y = (TOP + BOTTOM)/2;
 		this.data = dataIn;
-		this.PM2_5 = pm_2_5_in;
+		this.PM2_5 = pm_2_5_in;*/
+		SCREEN_WIDTH = mContext.getResources().getDisplayMetrics().widthPixels;		
+		TO_LEFT = SCREEN_WIDTH/2 - SCREEN_WIDTH/5;
+		TO_RIGHT = SCREEN_WIDTH/2 + SCREEN_WIDTH/5;
+		TOP = SCREEN_WIDTH/8;
+		BOTTOM = SCREEN_WIDTH*2/5 + TOP;
+		lineLength = (BOTTOM - TOP + 100)/2;
+		center_x = (TO_LEFT + TO_RIGHT)/2;
+		center_y = (TOP + BOTTOM)/2;
+		this.data = dataIn;
+		this.PM2_5 = pm_2_5_in;				
+				
+				
+				
 	}
 	
 	public void drawData(Canvas canvas,int dataNow){
